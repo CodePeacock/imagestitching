@@ -1,60 +1,59 @@
 import argparse
 import logging
-import concurrent.futures
+import pathlib
 
 import cv2
 
 from image_stitching import ImageStitcher
-from image_stitching import load_frames
-from image_stitching import display
-
-DOC = """This script lets us stich images together and display or save the results"""
+from image_stitching.helpers import load_frames, save_frames_as_images
 
 
 def parse_args():
-    """parses the command line arguments"""
-    parser = argparse.ArgumentParser(description=DOC)
+    parser = argparse.ArgumentParser(description="Image Stitching")
     parser.add_argument(
-        "paths", type=str, nargs="+", help="paths to images, directories, or videos"
+        "video_path",
+        type=str,
+        help="Path to the input video",
     )
-    parser.add_argument("--debug", action="store_true", help="enable debug logging")
-
-    parser.add_argument("--display", action="store_true", help="display result")
-    parser.add_argument("--save", action="store_true", help="save result to file")
+    parser.add_argument("--display", action="store_true", help="Display result")
+    parser.add_argument("--save", action="store_true", help="Save result to file")
     parser.add_argument(
-        "--save-path", default="stitched.png", type=str, help="path to save result"
+        "--save-path",
+        default="panorama.png",
+        type=str,
+        help="Path to save result",
     )
-
     return parser.parse_args()
 
 
-def process_image(stitcher, frame):
-    stitcher.add_image(frame)
-    return stitcher.image()
-
-
-result = None
-if __name__ == "__main__":
+def main():
     args = parse_args()
-    level = logging.DEBUG if args.debug else logging.INFO
-    logging.basicConfig(level=level)
+    logging.basicConfig(level=logging.INFO)
+
+    # Create an output directory for saving frames as images
+    image_output_dir = pathlib.Path("frames")
+    image_output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Call the function to save frames as images
+    save_frames_as_images(args.video_path, image_output_dir)
 
     stitcher = ImageStitcher()
 
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        frames = load_frames(args.paths)
-        results = list(
-            executor.map(lambda frame: process_image(stitcher, frame), frames)
-        )
+    # Call the function to load and process saved frames
+    for frame in load_frames()(image_output_dir):
+        stitcher.add_image(frame)
+
+    result = stitcher.image()
 
     if args.display:
-        for idx, result in enumerate(results):
-            logging.info(f"displaying image {idx}")
-            display("result", result)
-            if cv2.waitKey(25) & 0xFF == ord("q"):
-                break
-    cv2.imwrite(args.save_path, results[-1])
+        cv2.imshow("result", result)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
-# if args.save:
-#     logging.info(f"saving final image to {args.save_path}")
-#     cv2.imwrite(args.save_path, result)
+    if args.save:
+        logging.info(f"Saving final image to {args.save_path}")
+        cv2.imwrite(args.save_path, result)
+
+
+if __name__ == "__main__":
+    main()

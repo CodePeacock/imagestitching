@@ -21,34 +21,31 @@ def display(title, img, max_size=500000):
     cv2.imshow(title, img)
 
 
-def read_video(video_path: pathlib.Path, buffer_size=100):
-    """read video is a generator class yielding frames"""
+def save_frames_as_images(video_path: pathlib.Path, output_directory: pathlib.Path):
+    """Save frames from a video as images."""
     cap = cv2.VideoCapture(str(video_path))
-    cap.set(cv2.CAP_PROP_BUFFERSIZE, buffer_size)
+    frame_count = 0
 
     while True:
         ret, frame = cap.read()
         if not ret or frame is None:
             break
 
-        yield frame
+        frame_filename = output_directory / f"frame{frame_count:04d}.png"
+        cv2.imwrite(str(frame_filename), frame)
 
-    cap.release()  # Release the video capture object when done
+        frame_count += 1
+
+    cap.release()
 
 
-def load_frames(paths: List[str]) -> Generator[numpy.ndarray, None, None]:
-    """
-    load_frames takes in a list of paths to image,
-    video files, or directories and yields them
-    """
-    for path in paths:
-        path = pathlib.Path(path)
+def load_frames(image_directory: pathlib.Path):
+    """Load saved frames from images and yield them one by one."""
+    image_files = sorted(
+        image_directory.glob("*.png")
+    )  # Adjust the file extension as needed
 
-        if path.is_dir():
-            yield from load_frames(path.rglob("*"))
-        elif path.suffix.lower() in {".jpg", ".jpeg", ".png"}:
-            yield cv2.imread(str(path))
-        elif path.suffix.lower() in {".avi", ".mp4", ".mov"}:
-            yield from read_video(path)
-        else:
-            logging.warning(f"skipping {path.name}...")
+    for image_file in image_files:
+        frame = cv2.imread(str(image_file))
+        if frame is not None:
+            yield frame
