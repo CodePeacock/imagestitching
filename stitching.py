@@ -40,7 +40,7 @@ def main():
     stitcher = ImageStitcher()
 
     # Call the function to load and process saved frames
-    for frame in load_frames()(image_output_dir):
+    for frame in load_frames(image_output_dir):
         stitcher.add_image(frame)
 
     result = stitcher.image()
