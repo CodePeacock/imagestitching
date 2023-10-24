@@ -61,9 +61,9 @@ target/
 # PyCharm
 .idea/
 # Images
-*.png
-*.jpeg
-*.jpg
+# *.png
+# *.jpeg
+# *.jpg
 examples/*
 **/.DS_Store
 # /video.mp4
