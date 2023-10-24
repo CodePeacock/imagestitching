@@ -66,4 +66,4 @@ target/
 *.jpg
 examples/*
 **/.DS_Store
-/video.mp4
+# /video.mp4
