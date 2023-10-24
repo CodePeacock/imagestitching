@@ -8,8 +8,12 @@ DOC = """helper functions for combining images, only to be used in the stitcher 
 
 def compute_matches(features0, features1, matcher, knn=5, lowe=0.7):
     """
-    this applies lowe-ratio feature matching between feature0 an dfeature 1 using flann
+    this applies lowe-ratio feature matching between feature0 and feature 1 using flann
     """
+    if features0 is None or features1 is None:
+        logging.warning("Either features0 or features1 is None.")
+        return None, None, 0
+
     keypoints0, descriptors0 = features0
     keypoints1, descriptors1 = features1
 
