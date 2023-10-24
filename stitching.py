@@ -1,9 +1,12 @@
 import argparse
 import logging
+import concurrent.futures
 
 import cv2
 
-from image_stitching import ImageStitcher, display, load_frames
+from image_stitching import ImageStitcher
+from image_stitching import load_frames
+from image_stitching import display
 
 DOC = """This script lets us stich images together and display or save the results"""
 
@@ -25,6 +28,12 @@ def parse_args():
     return parser.parse_args()
 
 
+def process_image(stitcher, frame):
+    stitcher.add_image(frame)
+    return stitcher.image()
+
+
+result = None
 if __name__ == "__main__":
     args = parse_args()
     level = logging.DEBUG if args.debug else logging.INFO
@@ -32,24 +41,23 @@ if __name__ == "__main__":
 
     stitcher = ImageStitcher()
 
-    for idx, frame in enumerate(load_frames(args.paths)):
-        stitcher.add_image(frame)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        frames = load_frames(args.paths)
+        results = list(
+            executor.map(lambda frame: process_image(stitcher, frame), frames)
+        )
 
-        result = stitcher.image()
-
-        if args.display:
+    if args.display:
+        for idx, result in enumerate(results):
             logging.info(f"displaying image {idx}")
             display("result", result)
             if cv2.waitKey(25) & 0xFF == ord("q"):
                 break
 
-        if args.save:
-            image_name = f"result_{idx}.jpg"
-            logging.info(f"saving result image on {image_name}")
+    if args.save:
+        logging.info(f"saving final image to {args.save_path}")
+        cv2.imwrite(args.save_path, results[-1])
 
-            cv2.imwrite(image_name, result)
-            logging.info("finished stitching images together")
-
-        if args.save:
-            logging.info(f"saving final image to {args.save_path}")
-            cv2.imwrite(args.save_path, result)
+# if args.save:
+#     logging.info(f"saving final image to {args.save_path}")
+#     cv2.imwrite(args.save_path, result)

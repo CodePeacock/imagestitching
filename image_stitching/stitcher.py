@@ -3,8 +3,7 @@ import logging
 import cv2
 import numpy
 
-from .combine import combine_images
-from .combine import compute_matches
+from .combine import combine_images, compute_matches
 
 DOC = """ImageStitcher class for combining all images together"""
 
@@ -23,6 +22,7 @@ class ImageStitcher:
 
         self.result_image = None
         self.result_image_gray = None
+        self.result_features = None
 
     def add_image(self, image: numpy.ndarray):
         """
@@ -38,14 +38,15 @@ class ImageStitcher:
         if self.result_image is None:
             self.result_image = image
             self.result_image_gray = image_gray
+            self.result_features = self.sift.detectAndCompute(
+                self.result_image_gray, None
+            )
             return
 
-        # todo(will.brennan) - stop computing features on the results image each time!
-        result_features = self.sift.detectAndCompute(self.result_image_gray, None)
         image_features = self.sift.detectAndCompute(image_gray, None)
 
         matches_src, matches_dst, n_matches = compute_matches(
-            result_features,
+            self.result_features,
             image_features,
             matcher=self.flann,
             knn=self.knn_clusters,
@@ -62,6 +63,7 @@ class ImageStitcher:
         logging.debug("stitching images together")
         self.result_image = combine_images(image, self.result_image, homography)
         self.result_image_gray = cv2.cvtColor(self.result_image, cv2.COLOR_RGB2GRAY)
+        self.result_features = self.sift.detectAndCompute(self.result_image_gray, None)
 
     def image(self):
         """class for fetching the stitched image"""

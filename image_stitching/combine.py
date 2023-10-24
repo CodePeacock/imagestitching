@@ -45,24 +45,22 @@ def combine_images(img0, img1, h_matrix):
 
     points0 = numpy.array(
         [
-            [0, 0],
-            [0, img0.shape[0]],
-            [img0.shape[1], img0.shape[0]],
-            [img0.shape[1], 0],
+            [[0, 0]],
+            [[0, img0.shape[0]]],
+            [[img0.shape[1], img0.shape[0]]],
+            [[img0.shape[1], 0]],
         ],
         dtype=numpy.float32,
     )
-    points0 = points0.reshape((-1, 1, 2))
     points1 = numpy.array(
         [
-            [0, 0],
-            [0, img1.shape[0]],
-            [img1.shape[1], img1.shape[0]],
-            [img1.shape[1], 0],
+            [[0, 0]],
+            [[0, img1.shape[0]]],
+            [[img1.shape[1], img1.shape[0]]],
+            [[img1.shape[1], 0]],
         ],
         dtype=numpy.float32,
     )
-    points1 = points1.reshape((-1, 1, 2))
 
     points2 = cv2.perspectiveTransform(points1, h_matrix)
     points = numpy.concatenate((points0, points2), axis=0)

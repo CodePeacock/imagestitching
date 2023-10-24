@@ -1,8 +1,6 @@
 import logging
 import pathlib
-
-from typing import List
-from typing import Generator
+from typing import Generator, List
 
 import cv2
 import numpy
@@ -23,16 +21,17 @@ def display(title, img, max_size=500000):
     cv2.imshow(title, img)
 
 
-def read_video(video_path: pathlib.Path):
+def read_video(video_path: pathlib.Path, buffer_size=100):
     """read video is a generator class yielding frames"""
-    cap = cv2.VideoCapture(str(video_path))
+    with cv2.VideoCapture(str(video_path)) as cap:
+        cap.set(cv2.CAP_PROP_BUFFERSIZE, buffer_size)
 
-    while True:
-        ret, frame = cap.read()
-        if not ret or frame is None:
-            break
+        while True:
+            ret, frame = cap.read()
+            if not ret or frame is None:
+                break
 
-        yield frame
+            yield frame
 
 
 def load_frames(paths: List[str]) -> Generator[numpy.ndarray, None, None]:
