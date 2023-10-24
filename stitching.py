@@ -53,10 +53,7 @@ if __name__ == "__main__":
             display("result", result)
             if cv2.waitKey(25) & 0xFF == ord("q"):
                 break
-
-    if args.save:
-        logging.info(f"saving final image to {args.save_path}")
-        cv2.imwrite(args.save_path, results[-1])
+    cv2.imwrite(args.save_path, results[-1])
 
 # if args.save:
 #     logging.info(f"saving final image to {args.save_path}")

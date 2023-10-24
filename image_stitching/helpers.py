@@ -23,7 +23,7 @@ def display(title, img, max_size=500000):
 
 def read_video(video_path: pathlib.Path, buffer_size=100):
     """read video is a generator class yielding frames"""
-    cap = cv2.VideoCapture(str( video_path))
+    cap = cv2.VideoCapture(str(video_path))
     cap.set(cv2.CAP_PROP_BUFFERSIZE, buffer_size)
 
     while True:
