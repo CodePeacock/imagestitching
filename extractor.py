@@ -118,7 +118,7 @@ def extract_clear_frames(
 
 
 if __name__ == "__main__":
-    video_path = "video.mp4"
+    video_path = "video.mkv"
     output_folder = "frames_output"
     ssim_threshold = 0.9
     motion_threshold = 1000
