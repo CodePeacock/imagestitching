@@ -1,6 +1,7 @@
 numpy
-opencv-python>=4.5
-opencv-contrib-python>=4.5
+opencv-python
+opencv-contrib-python
 yapf
 pylint
 stitching
+scikit-image

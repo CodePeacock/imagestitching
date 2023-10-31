@@ -12,7 +12,7 @@ import numpy as np
 # Path to sets of images                                                       #
 ################################################################################
 
-PREPATH = "images/"
+PREPATH = "img/"
 IMNAMES = {
     "cmpe_building": ["left_2", "left_1", "middle", "right_1", "right_2"],
     "north_campus": ["left_2", "left_1", "middle", "right_1", "right_2"],
@@ -103,14 +103,14 @@ def select_points(img, K):
 def cv_mouse_click(event, x, y, flags, param):
     if event == cv.EVENT_LBUTTONDOWN:
         pos = (x, y)  # cv2 format
-        if type(param) is list:
+        if isinstance(param) is list:
             param.append(pos)
 
 
 def cv_select_points(img, K, winname, param=None):
     if param is None:
         param = []
-    assert type(param) is list
+    assert isinstance(param) is list
     colors = color_list(K)
     cv.namedWindow(winname)
     cv.setMouseCallback(winname, cv_mouse_click, param)
@@ -462,7 +462,7 @@ def mark_points(img, x, colormap=cv.COLORMAP_HSV, bgr=False):
     marked = cv.cvtColor(img, cv.COLOR_RGB2BGR)
     if colormap == "invert":
         colors = [tuple(int(256 - v) for v in img[p]) for p in x]
-    elif type(colormap) is list:
+    elif isinstance(colormap) is list:
         colors = colormap if len(colormap) >= len(x) else color_list(len(x))
     else:
         colors = color_list(len(x), colormap)
@@ -584,11 +584,14 @@ def test_check_points(dataset, h_use_cv=False, w_use_cv=False):
     print(f"OpenCV usage: homography ({h_use_cv}), warping ({w_use_cv})")
     points = load_points(dataset)
     imgs = read_imgs(dataset)
-    colors = color_list(len(points[0][1][0]))
-    disp = lambda img, h=480: cv.cvtColor(
-        cv.resize(img, (0, 0), fx=h / img.shape[0], fy=h / img.shape[0]),
-        cv.COLOR_RGB2BGR,
-    )
+    color_list(len(points[0][1][0]))
+
+    def disp(img, h=480):
+        return cv.cvtColor(
+            cv.resize(img, (0, 0), fx=h / img.shape[0], fy=h / img.shape[0]),
+            cv.COLOR_RGB2BGR,
+        )
+
     for i in range(len(points)):
         for j in range(i):
             points[i][j] = None
