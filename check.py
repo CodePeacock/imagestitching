@@ -1,4 +1,5 @@
 import os
+
 import cv2
 import numpy as np
 
@@ -13,12 +14,10 @@ def stitch_images(images):
     # Initialize the result with the first image
     result = images[0]
 
-    descriptors = []  # Initialize descriptors as an empty list
-
     # Initialize feature detector (SIFT) for the first image
     gray_first = cv2.cvtColor(images[0], cv2.COLOR_BGR2GRAY)
     keypoints_first, descriptors_first = detector.detectAndCompute(gray_first, None)
-    descriptors.append(descriptors_first)  # Add the descriptor to the list
+    descriptors = [descriptors_first]
     locations = [keypoints_first]
 
     for i in range(1, len(images)):

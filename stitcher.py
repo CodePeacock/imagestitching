@@ -3,7 +3,6 @@ import os
 from multiprocessing.pool import ThreadPool
 
 import cv2
-from tqdm import tqdm
 
 # Configure logging
 logging.basicConfig(
@@ -34,7 +33,7 @@ def stitch_and_save_batch(args):
 
 def main():
     input_folder = "frames_output"
-    output_folder = "panorama_output"
+    output_folder = "panoramas_output_work"
     batch_size = 50
 
     os.makedirs(output_folder, exist_ok=True)
