@@ -32,9 +32,9 @@ def stitch_and_save_batch(args):
 
 
 def main():
-    input_folder = "frames_output"
+    input_folder = "frames"
     output_folder = "panoramas_output_work"
-    batch_size = 50
+    batch_size = 2
 
     os.makedirs(output_folder, exist_ok=True)
 
