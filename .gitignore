@@ -66,9 +66,7 @@ target/
 # *.jpg
 examples/*
 **/.DS_Store
-# /video.mp4
-/panorama_output
 /.sourcery.yaml
-/img
 /.vscode
 /frames
+/images
