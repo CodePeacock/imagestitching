@@ -5,3 +5,4 @@ yapf
 pylint
 stitching
 scikit-image
+tqdm
